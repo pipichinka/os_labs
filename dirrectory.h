@@ -1,24 +1,24 @@
 #include <dirent.h>
-
-typedef struct Dirrectory Dirrectory;
-
-
-Dirrectory* new_Dirrectory(char* dir_name, int dir_name_size);
+#define ERROR_DEIRECTORY -1
 
 
-void free_Dirrectory(Dirrectory* dir);
+typedef struct Directory Directory;
+
+Directory* new_Directory(char* dir_name, int dir_name_size);
+
+void free_Directory(Directory* dir);
 
 
-void open_Dirrectory(Dirrectory* dir);
+void open_Directory(Directory* dir);
 
 
-DIR* get_DIR(Dirrectory* dir);
+DIR* get_DIR(Directory* dir);
 
 
-char* make_path(char* dir, int dir_name_size, char* file_name, int file_name_size);
+int make_path(char* dir, int dir_name_size, char* file_name, int file_name_size, char* result);
 
 
-char* get_dir_name(Dirrectory* dir);
+char* get_dir_name(Directory* dir);
 
 
-int get_dir_name_size(Dirrectory* dir);
+int get_dir_name_size(Directory* dir);
