@@ -1,0 +1,95 @@
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <errno.h>
+#include <dirent.h>
+#include <sys/unistd.h>
+#define ERROR 1
+#define RIGHTS_LEN 9
+int mymkdir(char* name){
+    if (mkdir(name, 0777)){
+        perror("mymkdir: removing dir");
+        return ERROR;
+    }
+    return 0;
+}
+
+
+int myls(char* name){
+    DIR* dir;
+    if ((dir = opendir(name)) == NULL){
+        perror("myls: openning dir");
+        return ERROR;
+    }
+    struct dirent* entry_element;
+    while ((entry_element = readdir (dir)) != NULL){
+        printf("%s\n", entry_element->d_name);
+    }    
+    if (errno){
+        perror("myls: reading dir");
+        closedir(dir);
+        return ERROR;
+    }
+    if (closedir(dir)){
+        perror("myls: closing dir");
+        return ERROR;
+    }
+    return 0;
+}
+
+
+int myrmdir(char* name){
+    if (rmdir(name)){
+        perror("myrmdir: removing dir");
+        return ERROR;
+    }
+    return 0;
+}
+
+
+int mytouch(char* name){
+    int fd = creat(name,0644);
+    if (fd == -1){ 
+        perror("mytouch: creating file");
+        return ERROR;
+    }
+    if (close(fd)){
+        perror("mytouch: closing created file");
+        return ERROR;
+    }
+    return 0;
+}
+
+
+int mycat(char* name){
+    FILE* file = fopen(name, "r");
+    if (file == NULL){
+        perror("mycat: openning file:");
+        return ERROR;
+    }
+    size_t size;
+    char buffer[4096];
+    while((size = fread(buffer, sizeof(char), 4096, file))){
+        if (fwrite(buffer, size, 1, stdout )== 0){
+            perror("mycat: printing file");
+            fclose(file);
+            return ERROR;
+        }
+    }
+    if (ferror(file)){
+        perror("mycat: closing file");
+        fclose(file);
+        return ERROR;
+    }
+    if (fclose(file)){
+        perror("mycat: closing file");
+        return ERROR;
+    }
+    return 0;
+}
+
